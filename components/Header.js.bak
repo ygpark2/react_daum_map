@@ -1,0 +1,82 @@
+import React, {Component} from 'react'
+import SearchKeywordResults from './SearchKeywordResults'
+
+export default class Header extends Component {
+
+  constructor(props) {
+    super(props)
+    this.state = {
+      map: null,
+      csList: []
+    }
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('nextProps ')
+    console.log(nextProps)
+    console.log('nextState ')
+    console.log(nextState)
+    console.log('shouldComponentUpdate')
+    var count = nextState.csList.length
+    return true
+  }
+
+  componentDidMount() {
+    console.log("------------------ header component did mount ------------------")
+    this.setState({
+      csList: []
+    })
+    console.log(this.props.map)
+    console.log(this.state.map)
+  }
+
+  handleClick() {
+    // Explicitly focus the text input using the raw DOM API.
+    this.refs.searchTextInput.focus()
+    console.log(this.refs.searchTextInput.value)
+
+    $.ajax({
+      type: "POST",
+      url: "../../chargingInfra/getCsInfo?_REQ_DATA_TYPE_=json&_USE_WRAPPED_OBJECT_=true",
+      data: {_REQ_JSON_OBJECT_: "{area_cd:\"\", warea_cd:\"7\", cs_tp:\"\", cs_nm:\"" + this.refs.searchTextInput.value + "\", comp1:\"01\", comp2:\"02\", comp3:\"03\", charge1:\"1\", charge2:\"2\", charge3:\"3\", charge4:\"4\"}"},
+      success: function( data, textStatus, jqXHR ) {
+
+        this.setState({
+          csList: data.data.list
+        })
+        // this.state.csList = data.data.list
+        console.log(data)
+        console.log(data.data)
+        console.log(data.data.list)
+
+      }.bind(this),
+      error: function(xhr, status, err) {
+          console.error(this.props.url, status, err.toString())
+      }.bind(this),
+      dataType: "json"
+    })
+    console.log("++++++++++++++++++++++++++++++++")
+  }
+
+  handleItemClick(cs) {
+    console.log("item clicked !!!!!!!!!!!!!!!!!!!!!!")
+    console.log(cs)
+    console.log(this.state.map)
+  }
+
+  render() {
+    return (
+      <div id='Header'>
+        <input type="text" ref="searchTextInput" />
+        <input type="button" value="검색" onClick={this.handleClick.bind(this)} />
+        <div className="searchList">
+        {this.state.csList.map(function(cs, i){
+            return <div className="searchItem" onClick={this.handleItemClick.bind(this, cs)} > {cs.cs_nm} </div>
+        }.bind(this))}
+        </div>
+      </div>
+    )
+  }
+}
+
+

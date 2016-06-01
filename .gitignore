@@ -1,0 +1,14 @@
+.classpath
+.project
+.settings
+
+.idea
+.gradle
+
+*.iml
+*.ipr
+*.iws
+*.log
+
+node_modules/
+
